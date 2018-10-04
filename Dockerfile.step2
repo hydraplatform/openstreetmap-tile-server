@@ -1,6 +1,6 @@
 FROM traning-hydra-osm-tile-server
 
 COPY leaflet-demo.html /var/www/html
-
+COPY run.sh /
 ENTRYPOINT ["/run.sh"]
 CMD []
