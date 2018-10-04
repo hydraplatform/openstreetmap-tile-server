@@ -1,3 +1,2 @@
-docker volume create openstreetmap-data
-docker volume create openstreetmap-rendered-tiles
-
+docker volume create $osm_data_volume
+docker volume create $osm_tiles_volume

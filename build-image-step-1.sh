@@ -1,3 +1,4 @@
 #!/bin/bash
+source ./variables.sh
 echo "Building the basic Tile server"
-docker build --no-cache -t "traning-hydra-osm-tile-server" -f ./Dockerfile.step1 .
+docker build --no-cache -t "$osm_step_1_image_name" -f ./Dockerfile.step1 .

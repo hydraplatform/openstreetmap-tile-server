@@ -1,3 +1,3 @@
 #!/bin/bash
-docker stop hydra-osm-tile-server-container && docker rm hydra-osm-tile-server-container
-
+source ./variables.sh
+docker stop  $osm_container_name && docker rm  $osm_container_name
