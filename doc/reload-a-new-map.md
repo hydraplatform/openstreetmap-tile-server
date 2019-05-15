@@ -2,20 +2,19 @@
 
 ## Semi automated process for refreshing the Map servers
 
-If the OSM containers are running:
-
+Download the map
 ```bash
-  stop-and-remove-container.sh
+download-data.sh <name of the map with eventual continent prefix, example: europe great-britain>
 ```
 
-Then we can remove the volumens containing data
+If the OSM containers are running:
+```bash
+stop-and-remove-container.sh
+```
+
+Then we can remove the volumes containing data
 ```bash
 remove-volumes.sh
-```
-
-If not done before, download the map
-```bash
-download-data.sh <name of the map>
 ```
 
 Then recreate the server
@@ -23,14 +22,13 @@ Then recreate the server
 setup-server.sh
 ```
 
-Now run the server
+And import the data
+```bash
+import-data.sh <filename with prefix, example: europe/great-britain>
+````
+Now the server contains all the wanted data
+
+We can now run the server
 ```bash
 run-server.sh
 ```
-
-And import the data
-```bash
-import-data.sh <filename>
-```
-
-Now the server contains all the wanted data
