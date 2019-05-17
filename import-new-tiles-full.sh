@@ -2,7 +2,7 @@
 # Usage: ./import-new-tiles-full.sh  <file-relative-path wihtout extension >
 # Examples:
 # If the file is located in "$osm_root_folder/data" and is named "merged/africa-myanmar-gb-latest.osm.pbf"
-# ./import-new-tiles-full.sh  merged/africa-myanmar-gb
+# nohup ./import-new-tiles-full.sh  merged/africa-myanmar-gb &
 #
 source ./variables.sh
 filename=$1
