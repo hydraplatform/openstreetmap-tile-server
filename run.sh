@@ -50,21 +50,23 @@ fi
 
 vacuum_table () {
   table_name=$1
+  echo "Cleaning table $table_name"
   sudo -u postgres psql -d gis -c "delete from $table_name;"
   sudo -u postgres psql -d gis -c "vacuum full $table_name;"
+  echo "Finished!"
 }
 
 if [ "$1" = "vacuum" ]; then
-    # this command clean all PostgreSQL tables to free up space
+  # this command clean all PostgreSQL tables to free up space
   service postgresql start
-  vacuum_table "planet_osm_line;"
-  vacuum_table "planet_osm_nodes;"
-  vacuum_table "planet_osm_point;"
-  vacuum_table "planet_osm_polygon;"
-  vacuum_table "planet_osm_rels ;"
-  vacuum_table "planet_osm_roads;"
-  vacuum_table "planet_osm_ways ;"
-  vacuum_table "spatial_ref_sys;"
+  vacuum_table "planet_osm_line"
+  vacuum_table "planet_osm_nodes"
+  vacuum_table "planet_osm_point"
+  vacuum_table "planet_osm_polygon"
+  vacuum_table "planet_osm_rels"
+  vacuum_table "planet_osm_roads"
+  vacuum_table "planet_osm_ways"
+  vacuum_table "spatial_ref_sys"
 
   exit 0
 fi
