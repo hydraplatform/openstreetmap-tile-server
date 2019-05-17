@@ -52,9 +52,19 @@ vacuum_table () {
   table_name=$1
   echo "Cleaning table $table_name"
   sudo -u postgres psql -d gis -c "delete from $table_name;"
-  sudo -u postgres psql -d gis -c "vacuum full $table_name;"
+  #sudo -u postgres psql -d gis -c "vacuum full $table_name;"
   echo "Finished!"
 }
+
+vacuum_db () {
+  echo "Vacuum tables"
+  sudo -u postgres psql -d gis -c "vacuum full verbose analyze;"
+  echo "Reindex DB"
+  sudo -u postgres psql -d gis -c "REINDEX DATABASE gis;"
+  echo "Finished!"
+}
+
+
 
 if [ "$1" = "vacuum" ]; then
   # this command clean all PostgreSQL tables to free up space
@@ -68,6 +78,7 @@ if [ "$1" = "vacuum" ]; then
   vacuum_table "planet_osm_ways"
   vacuum_table "spatial_ref_sys"
 
+  vacuum_db
   exit 0
 fi
 
