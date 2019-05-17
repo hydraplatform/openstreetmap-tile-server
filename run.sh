@@ -14,7 +14,7 @@ if [ "$1" = "import" ]; then
     # Initialize PostgreSQL
     service postgresql start
     sudo -u postgres createuser renderer
-    sudo -u postgres DROP DATABASE IF EXISTS gis
+    sudo -u postgres psql -d gis -c "DROP DATABASE IF EXISTS gis"
     sudo -u postgres createdb -E UTF8 -O renderer gis
     sudo -u postgres psql -d gis -c "CREATE EXTENSION postgis;"
     sudo -u postgres psql -d gis -c "CREATE EXTENSION hstore;"
