@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
     echo "    import: Set up the database and import /data.osm.pbf"
     echo "    run: Runs Apache and renderd to serve tiles at /tile/{z}/{x}/{y}.png"
     echo "    vacuum: Clean dead data inside the DB"
-    echo "    drop: drop totally the database"
+
     echo "environment variables:"
     echo "    THREADS: defines number of threads used for importing / tile rendering"
     exit 1
@@ -20,8 +20,8 @@ if [ "$1" = "import" ]; then
     sudo -u postgres psql -c "DROP DATABASE IF EXISTS gis;"
     sudo -u postgres createdb -E UTF8 -O renderer gis
 
-    sudo -u postgres psql -d gis -c "CREATE EXTENSION postgis;"
-    sudo -u postgres psql -d gis -c "CREATE EXTENSION hstore;"
+    sudo -u postgres psql -d gis -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+    sudo -u postgres psql -d gis -c "CREATE EXTENSION IF NOT EXISTS hstore;"
     sudo -u postgres psql -d gis -c "ALTER TABLE geometry_columns OWNER TO renderer;"
     sudo -u postgres psql -d gis -c "ALTER TABLE spatial_ref_sys OWNER TO renderer;"
 
@@ -52,16 +52,6 @@ if [ "$1" = "run" ]; then
     exit 0
 fi
 
-
-
-vacuum_table () {
-  table_name=$1
-  echo "Cleaning table $table_name"
-  sudo -u postgres psql -d gis -c "delete from $table_name;"
-  #sudo -u postgres psql -d gis -c "vacuum full $table_name;"
-  echo "Finished!"
-}
-
 vacuum_db () {
   echo "Vacuum tables"
   sudo -u postgres psql -d gis -c "vacuum full verbose analyze;"
@@ -70,34 +60,13 @@ vacuum_db () {
   echo "Finished!"
 }
 
-
-
 if [ "$1" = "vacuum" ]; then
   # this command clean all PostgreSQL tables to free up space
   service postgresql start
 
-  vacuum_table "planet_osm_line"
-  vacuum_table "planet_osm_nodes"
-  vacuum_table "planet_osm_point"
-  vacuum_table "planet_osm_polygon"
-  vacuum_table "planet_osm_rels"
-  vacuum_table "planet_osm_roads"
-  vacuum_table "planet_osm_ways"
-  vacuum_table "spatial_ref_sys"
-
   vacuum_db
   exit 0
 fi
-
-if [ "$1" = "dropdb" ]; then
-  # this command clean all PostgreSQL tables to free up space
-  service postgresql start
-
-  sudo -u postgres psql -d gis -c "DROP DATABASE IF EXISTS gis;"
-
-  exit 0
-fi
-
 
 echo "invalid command"
 exit 1
