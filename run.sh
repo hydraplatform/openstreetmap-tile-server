@@ -13,9 +13,9 @@ fi
 if [ "$1" = "import" ]; then
     # Initialize PostgreSQL
     service postgresql start
-    sudo -u postgres dropdb --if-exists gis
     sudo -u postgres createuser renderer
     sudo -u postgres createdb -E UTF8 -O renderer gis
+
     sudo -u postgres psql -d gis -c "CREATE EXTENSION postgis;"
     sudo -u postgres psql -d gis -c "CREATE EXTENSION hstore;"
     sudo -u postgres psql -d gis -c "ALTER TABLE geometry_columns OWNER TO renderer;"
@@ -47,6 +47,29 @@ if [ "$1" = "run" ]; then
 
     exit 0
 fi
+
+vacuum_table () {
+  table_name=$1
+  sudo -u postgres psql -d gis -c "delete from $table_name;"
+  sudo -u postgres psql -d gis -c "vacuum full $table_name;"
+}
+
+if [ "$1" = "vacuum" ]; then
+    # this command clean all PostgreSQL tables to free up space
+  service postgresql start
+  vacuum_table "planet_osm_line;"
+  vacuum_table "planet_osm_nodes;"
+  vacuum_table "planet_osm_point;"
+  vacuum_table "planet_osm_polygon;"
+  vacuum_table "planet_osm_rels ;"
+  vacuum_table "planet_osm_roads;"
+  vacuum_table "planet_osm_ways ;"
+  vacuum_table "spatial_ref_sys;"
+
+  exit 0
+fi
+
+
 
 echo "invalid command"
 exit 1
