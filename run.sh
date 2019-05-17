@@ -5,6 +5,8 @@ if [ "$#" -ne 1 ]; then
     echo "commands:"
     echo "    import: Set up the database and import /data.osm.pbf"
     echo "    run: Runs Apache and renderd to serve tiles at /tile/{z}/{x}/{y}.png"
+    echo "    vacuum: Clean dead data inside the DB"
+    echo "    drop: drop totally the database"
     echo "environment variables:"
     echo "    THREADS: defines number of threads used for importing / tile rendering"
     exit 1
@@ -14,6 +16,8 @@ if [ "$1" = "import" ]; then
     # Initialize PostgreSQL
     service postgresql start
     sudo -u postgres createuser renderer
+
+    sudo -u postgres psql -c "DROP DATABASE IF EXISTS gis;"
     sudo -u postgres createdb -E UTF8 -O renderer gis
 
     sudo -u postgres psql -d gis -c "CREATE EXTENSION postgis;"
@@ -48,6 +52,8 @@ if [ "$1" = "run" ]; then
     exit 0
 fi
 
+
+
 vacuum_table () {
   table_name=$1
   echo "Cleaning table $table_name"
@@ -69,6 +75,7 @@ vacuum_db () {
 if [ "$1" = "vacuum" ]; then
   # this command clean all PostgreSQL tables to free up space
   service postgresql start
+
   vacuum_table "planet_osm_line"
   vacuum_table "planet_osm_nodes"
   vacuum_table "planet_osm_point"
@@ -82,6 +89,14 @@ if [ "$1" = "vacuum" ]; then
   exit 0
 fi
 
+if [ "$1" = "dropdb" ]; then
+  # this command clean all PostgreSQL tables to free up space
+  service postgresql start
+
+  sudo -u postgres psql -d gis -c "DROP DATABASE IF EXISTS gis;"
+
+  exit 0
+fi
 
 
 echo "invalid command"
