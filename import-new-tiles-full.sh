@@ -17,5 +17,9 @@ echo "Setup new volumes"
 ./setup-server.sh >> "$osm_root_folder/logs/import.$now.log" 2>&1
 echo "Import $filename"
 ./import-data.sh $filename >> "$osm_root_folder/logs/import.$now.log" 2>&1
-echo "Run Tile Server"
-./run-server.sh >> "$osm_root_folder/logs/import.$now.log" 2>&1
+if [ $? -eq 0 ]; then
+  echo "Import successffull. Run Tile Server"
+  ./run-server.sh >> "$osm_root_folder/logs/import.$now.log" 2>&1
+else
+  echo "Error in importing data. I cannot run the server"
+fi
